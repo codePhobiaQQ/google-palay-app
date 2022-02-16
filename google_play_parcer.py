@@ -14,7 +14,6 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36'
 }
 
-# def parser_first():
 response = requests.get(link, headers=headers)
 src = response.text
 
@@ -22,7 +21,16 @@ src = response.text
 soup = BeautifulSoup(src, "html.parser")
 
 #Находим элемент с определенным классом
-all_products = soup.find("div", class_="ZmHEEd").findAll("a")
+
+all_products = []
+
+all_products_wrapper = soup.findAll("div", class_="ZmHEEd")
+
+for item in all_products_wrapper:
+    ptr = item.findAll("a")
+    for ptr_item in ptr: 
+        all_products.append(ptr_item)    
+
 all_apps_hrefs = []
 
 for item in all_products:
@@ -58,22 +66,25 @@ ws = wb['data']
 ws.append(['title', 'installs', 'url', 'version', 'score', 'price', 'developerWebsite', 'developerEmail'])
 ws.append(['', '', '', '', '', '', '', ''])
 
-
 for item in only_name:
-    result = app(
-        item,
-        lang='ru', # defaults to 'en'
-        country='us' # defaults to 'us'
-    )
-    ws.append([f'{result["title"]}',
-               f'{result["installs"]}',
-               f'{result["url"]}',
-               f'{result["version"]}',
-               f'{result["score"]}',
-               f'{result["price"]}',
-               f'{result["developerWebsite"]}',
-               f'{result["developerEmail"]}',
-               ])
+    try:
+        result = app(
+            item,
+            lang='ru', # defaults to 'en'
+            country='us' # defaults to 'us'
+        )
+        ws.append([f'{result["title"]}',
+                f'{result["installs"]}',
+                f'{result["url"]}',
+                f'{result["version"]}',
+                f'{result["score"]}',
+                f'{result["price"]}',
+                f'{result["developerWebsite"]}',
+                f'{result["developerEmail"]}',
+                ])
+    except Exception as ex:
+        pass
+
     
 wb.save(fn)
 wb.close()

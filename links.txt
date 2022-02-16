@@ -1,0 +1,2 @@
+"https://play.google.com/store/search?q=asphalt&c=apps&hl=ru&gl=US"
+"https://play.google.com/store/search?q=tiktok&c=apps"
