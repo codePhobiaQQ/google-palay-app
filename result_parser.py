@@ -85,10 +85,8 @@ except Exception as ex:
 finally:
     driver.close()
     driver.quit() 
-
-only_name = set(only_name)
     
-fn = "example.xlsx"
+fn = "result.xlsx"
 wb = load_workbook(fn)
 ws = wb['data']
 
