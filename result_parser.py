@@ -21,7 +21,7 @@ options = webdriver.ChromeOptions()
 options.add_argument("'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
 options.add_argument("'accept': '*/*'")
 
-# url = "https://play.google.com/store/search?q=asphalt&c=apps&hl=ru&gl=US"
+url = "https://play.google.com/store/search?q=asphalt&c=apps&hl=ru&gl=US"
 
 driver = webdriver.Chrome(
     executable_path="/Users/helloworld/Documents/bots/google-palay-app/chrome/chromedriver",
@@ -30,10 +30,9 @@ driver = webdriver.Chrome(
 
 only_name = []
 
-for url in links:
-
-    try: 
-        driver.get(url=url)
+try: 
+    for linking in links:
+        driver.get(url=linking)
         last_height = driver.execute_script("return document.body.scrollHeight")
 
         while True:
@@ -75,55 +74,46 @@ for url in links:
                         only_name.append(item[item.find("?id=") + 4:])
                             
                 
-                driver.close()
-                driver.quit()   
+                # driver.close()
+                # driver.quit()   
                 break
             
             last_height = new_height
-            
-    except Exception as ex:
-        print(ex)
-    finally:
-        driver.close()
-        driver.quit()    
+        
+except Exception as ex:
+    print(ex)
+finally:
+    driver.close()
+    driver.quit() 
+
+only_name = set(only_name)
     
-    
-    
-    
+fn = "example.xlsx"
+wb = load_workbook(fn)
+ws = wb['data']
+
+ws.append(['title', 'installs', 'url', 'version', 'score', 'price', 'developerWebsite', 'developerEmail'])
+ws.append(['', '', '', '', '', '', '', ''])
+
+
 for item in only_name:
-    print(item)
+    try:
+        result = app(
+            item,
+            lang='ru', # defaults to 'en'
+            country='us' # defaults to 'us'
+        )
+        ws.append([f'{result["title"]}',
+                f'{result["installs"]}',
+                f'{result["url"]}',
+                f'{result["version"]}',
+                f'{result["score"]}',
+                f'{result["price"]}',
+                f'{result["developerWebsite"]}',
+                f'{result["developerEmail"]}',
+                ])
+        wb.save(fn)
+    except Exception as ex:
+        pass
     
-    
-
-    
-# fn = "example.xlsx"
-# wb = load_workbook(fn)
-# ws = wb['data']
-
-# ws.append(['title', 'installs', 'url', 'version', 'score', 'price', 'developerWebsite', 'developerEmail'])
-# ws.append(['', '', '', '', '', '', '', ''])
-
-
-# for item in only_name:
-#     try:
-#         result = app(
-#             item,
-#             lang='ru', # defaults to 'en'
-#             country='us' # defaults to 'us'
-#         )
-#         ws.append([f'{result["title"]}',
-#                 f'{result["installs"]}',
-#                 f'{result["url"]}',
-#                 f'{result["version"]}',
-#                 f'{result["score"]}',
-#                 f'{result["price"]}',
-#                 f'{result["developerWebsite"]}',
-#                 f'{result["developerEmail"]}',
-#                 ])
-#     except Exception as ex:
-#         pass
-    
-# wb.save(fn)
-# wb.close()
-
-
+wb.close()   
